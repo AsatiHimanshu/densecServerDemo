@@ -86,7 +86,7 @@ DATABASES = {
         'HOST': 'dendrites-db.database.windows.net',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 18 for SQL Server',
+            'driver': 'ODBC Driver 13 for SQL Server',
             'MARS_Connection': 'True',
         }
     }
