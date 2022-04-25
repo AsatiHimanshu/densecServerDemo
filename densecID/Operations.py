@@ -9,12 +9,12 @@ import imagehash
 # from django.core.files import default_storage
 
 class Operations:
-
+#     method to encode the image into string to store into database
     def encode_img(self,image):
         # reduce size of image before storing
         image_str = cv2.imencode(".jpg",image)[1].tostring()
         return image_str
-
+#     method to denode the image from string retreived from database into image. 
     def decode_img(self,image):
        
         image = np.frombuffer(image,np.uint8)
@@ -23,13 +23,12 @@ class Operations:
         
         # image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 
-
-
+#     method to create a hash from the image to be used as productID
     def hash_function(self,image):
         img_pil = Image.fromarray(image)
         im_hash = imagehash.whash(img_pil)
         return str(im_hash)
-
+#     method to compare two images. Uses ORB algorithm. More details about ORB in documentation
     def orb_Sim(self,imgA , imgB):
         orb = cv2.ORB_create()
         kpA, dsA = orb.detectAndCompute(imgA, None)
@@ -41,7 +40,7 @@ class Operations:
         if len(matches) == 0:
             return 0
         return len(similar)/len(matches)*100
-
+#       method to retreive the 20 images from database at a time. 
     def select_images(self,i):
 
         images = dendrites.objects.values_list("dendPic", flat=True)[i:i+20]
@@ -49,7 +48,8 @@ class Operations:
 
         images = [self.decode_img(a) for a in images]
         return images,hash
-        
+#       method to compare the current image against the 20 images loaded.
+#       captured image is compared with all the images in the database (loaded 20 at a time)
     def image_Compare(self,image):
         scan = image
         den_images=[]
@@ -90,7 +90,8 @@ class Operations:
                 return den_images[match]
 
     # --------------------------------------------------------------------------------
-        
+#   Database operations specified here
+#   method to insert a record in database
     def insert_row(self,task):
         try:
             ins = dendrites(dendID = task[0], 
@@ -106,8 +107,9 @@ class Operations:
         
 
     
-
+#   method to retreive a record from database
     def select_match(self,hash):
+
         try:
             match = dendrites.objects.filter(dendID = str(hash)).values()
             match = match[0]
@@ -126,3 +128,5 @@ class Operations:
                                                                 exp_date = str(task[5])) 
         except Exception as e:
             print("Error while updating database",e)
+
+

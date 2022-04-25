@@ -13,9 +13,11 @@ import cv2
 import json
 # Create your views here.
 
+#   Method to handle request for Retreiving the details of the scanned dendrite image. 
 def post1(request):
     handler = Operations.Operations()
-    print("post1 called")
+    print("Scan called")
+
     if request.method == 'POST':
         if request.FILES['file']:
             file = request.FILES['file']
@@ -24,7 +26,7 @@ def post1(request):
             return HttpResponse(json.dumps(msg))
         
         if file:
-            # filename = secure_filename(file.filename)
+            
             image = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
             image = cv2.rotate(image,rotateCode=cv2.ROTATE_90_CLOCKWISE)
             resizeDIm = (int(image.shape[1]*20/100),int(image.shape[0]*20/100))
@@ -33,7 +35,8 @@ def post1(request):
             # cv2.imshow(" ",image)
             # cv2.waitKey(0)
             # file_name = default_storage.save(filename,file)
-        
+            
+#       finding the image stored in database and retreiving the details of the image
         check = handler.image_Compare(image)
         if check != "No Match":
             data = handler.select_match(check[1])
@@ -50,15 +53,18 @@ def post1(request):
             print("No match found")
             msg = {"Match":"-1"}
             return HttpResponse(json.dumps(msg))
-    return HttpResponse("Hello World")
 
+# Method to handle request to register the captured dendrite image on database
 def post2(request):
+    print("Register called")
     handler = Operations.Operations()
     if request.method == 'POST':
         if request.FILES['file']:
+            
             file = request.FILES['file']
         else:
             msg = "No file sent"
+            
             return HttpResponse(json.dumps(msg))
         brand = request.POST.get("brnd")
         disc = request.POST.get("disc")
@@ -68,6 +74,7 @@ def post2(request):
         
         if file:
             # flname = secure_filename(file.filename)
+            
             image = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
             image = cv2.rotate(image,rotateCode=cv2.ROTATE_90_CLOCKWISE)
             resizeDIm = (int(image.shape[1]*20/100),int(image.shape[0]*20/100))
@@ -79,7 +86,7 @@ def post2(request):
         hashofImg = handler.hash_function(image)
         img = handler.encode_img(image)
         task = (hashofImg,img,brand,disc,cat,mfg,exp)
-        
+#       checks if the captured image exists in database  
         check = handler.image_Compare(image)
         if (check == "No Match"):
             handler.insert_row(task)
@@ -90,9 +97,10 @@ def post2(request):
             print("Match Found")
             msg = {"Match":"-1"}
             return HttpResponse(json.dumps(msg))
-    return HttpResponse("Post2")
 
+# method to handle the request to update the details of the stored dendrite 
 def post3(request):
+    print("Update Called")
     handler = Operations.Operations()
     if request.method == "POST":
 
@@ -103,9 +111,10 @@ def post3(request):
         mfg = request.POST.get("mfgdate")
         exp = request.POST.get("expdate")
         task=[id,brand,disc,cat,mfg,exp]
+#       method to update record in database  
         handler.update_info(task)
         print("Record Updated")
-        print(id)
+#       method to retreive the updated record.
         data = handler.select_match(id)
         print(data[4]+" "+data[5])
         msg = {"Match":"3", 

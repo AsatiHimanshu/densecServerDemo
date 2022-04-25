@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+# The class describes the schema for the database
 class dendrites(models.Model):
     dendID = models.CharField(max_length=20)
     dendPic = models.BinaryField()
