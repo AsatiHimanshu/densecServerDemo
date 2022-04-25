@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns=[
 
-    re_path('', csrf_exempt(views.post2), name ='base'),
+    # re_path('', csrf_exempt(views.post2), name ='base'),
 
     re_path(r'^post1/',csrf_exempt(views.post1), name='post1'),
 

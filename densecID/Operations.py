@@ -92,31 +92,37 @@ class Operations:
     # --------------------------------------------------------------------------------
         
     def insert_row(self,task):
-        
-        ins = dendrites(dendID = task[0], 
-                        dendPic = task[1],                 
-                        prod_name = task[2],
-                        prod_disc = task[3],
-                        prod_category = task[4],
-                        mfg_date = task[5],
-                        exp_date = task[6] )
-        ins.save()
+        try:
+            ins = dendrites(dendID = task[0], 
+                            dendPic = task[1],                 
+                            prod_name = task[2],
+                            prod_disc = task[3],
+                            prod_category = task[4],
+                            mfg_date = task[5],
+                            exp_date = task[6] )
+            ins.save()
+        except Exception as e:
+            print("Error while inserting",e)
         
 
     
 
     def select_match(self,hash):
-        
-        match = dendrites.objects.filter(dendID = str(hash)).values()
-        match = match[0]
-        
-        data=[match['dendID'],match['prod_name'],match['prod_disc'],match['prod_category'],match['mfg_date'],match['exp_date']]
-        return data
+        try:
+            match = dendrites.objects.filter(dendID = str(hash)).values()
+            match = match[0]
+            
+            data=[match['dendID'],match['prod_name'],match['prod_disc'],match['prod_category'],match['mfg_date'],match['exp_date']]
+            return data
+        except Exception as e:
+            print("Erreor in select match",e)
 
     def update_info(self,task):
-        
-        dendrites.objects.filter(dendID = str(task[0])).update(prod_name = str(task[1]),
-                                                               prod_disc = str(task[2]),
-                                                               prod_category = str(task[3]),
-                                                               mfg_date = str(task[4]),
-                                                               exp_date = str(task[5])) 
+        try:
+            dendrites.objects.filter(dendID = str(task[0])).update(prod_name = str(task[1]),
+                                                                prod_disc = str(task[2]),
+                                                                prod_category = str(task[3]),
+                                                                mfg_date = str(task[4]),
+                                                                exp_date = str(task[5])) 
+        except Exception as e:
+            print("Error while updating database",e)
